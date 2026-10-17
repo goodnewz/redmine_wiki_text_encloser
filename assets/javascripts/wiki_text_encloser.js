@@ -15,10 +15,24 @@
     initialized.add(textarea);
 
     textarea.addEventListener("keydown", (event) => {
-      if (event.defaultPrevented || event.isComposing || event.ctrlKey || event.metaKey || event.altKey || textarea.readOnly || textarea.disabled) return;
+      if (event.defaultPrevented || event.isComposing || textarea.readOnly || textarea.disabled) return;
       const start = textarea.selectionStart;
       const end = textarea.selectionEnd;
       if (start === end) return;
+
+      if (WikiTextEncloser.settings.markdownLinksEnabled &&
+          (event.ctrlKey || event.metaKey) && !event.altKey && !event.shiftKey &&
+          event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        const label = textarea.value.slice(start, end);
+        textarea.setRangeText("[" + label + "](url)", start, end, "select");
+        const urlStart = start + label.length + 3;
+        textarea.setSelectionRange(urlStart, urlStart + 3);
+        textarea.dispatchEvent(new Event("input", { bubbles: true }));
+        return;
+      }
+
+      if (event.ctrlKey || event.metaKey || event.altKey) return;
 
       const index = startSymbols.indexOf(event.key);
       if (index === -1 || !endSymbols[index]) return;
