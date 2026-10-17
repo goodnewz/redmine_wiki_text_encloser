@@ -3,7 +3,8 @@
     window.WikiTextEncloser = {
       settings: <%= raw json_escape({
         targetStartSymbols: Setting.plugin_redmine_wiki_text_encloser[:target_start_symbols].to_s,
-        targetEndSymbols: Setting.plugin_redmine_wiki_text_encloser[:target_end_symbols].to_s
+        targetEndSymbols: Setting.plugin_redmine_wiki_text_encloser[:target_end_symbols].to_s,
+        markdownLinksEnabled: %w[common_mark markdown].include?(Setting.text_formatting.to_s)
       }.to_json) %>
     };
   </script>

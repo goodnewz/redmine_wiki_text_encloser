@@ -20,6 +20,12 @@ Configured symbol pairs are passed to JavaScript as escaped JSON, preserving quo
 
 Local checks on Redmine 7.0.2 / Rails 8.1.4 covered settings rendering, selection wrapping, preview/edit switching, redraws, and dynamically created editors at desktop and mobile widths. These checks used Ruby 4.0.7 and SQLite; they do not establish compatibility with every deployment or theme.
 
+## Markdown links
+
+In Markdown editors, select the link text and press **Ctrl+K** (**Cmd+K** on macOS). The selection becomes `[selected text](url)`, with `url` selected so you can immediately type or paste the destination. Surrounding text and the selected label's existing Markdown formatting are preserved. The shortcut requires a nonempty selection and is enabled only when Redmine's text formatting is `common_mark` or legacy `markdown`; no plugin setting is required.
+
+Typing `[` still performs ordinary bracket wrapping (`[selected text]`), including for composing Redmine's `[[Wiki links]]`. Textile editors, other modifier shortcuts, IME composition, read-only or disabled editors, and events already handled elsewhere retain their existing behavior. The link shortcut also works in dynamically initialized toolbar editors and after toolbar redraws or preview/edit switching.
+
 ## Installation
 ### When using git
 1. Clone this repository to your Redmine plugins directory.
