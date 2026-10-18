@@ -5,6 +5,33 @@
   const startSymbols = Array.from(WikiTextEncloser.settings.targetStartSymbols);
   const endSymbols = Array.from(WikiTextEncloser.settings.targetEndSymbols);
 
+  function replaceSelection(textarea, replacement, start, end,
+                            selectionStart = start, selectionEnd = start + replacement.length) {
+    const previousValue = textarea.value;
+    let inputEmitted = false;
+    const onInput = () => {
+      inputEmitted = true;
+      textarea.setSelectionRange(selectionStart, selectionEnd);
+    };
+    // Set the final selection before existing bubbling input listeners run.
+    textarea.addEventListener("input", onInput, true);
+    try {
+      // Native insertion preserves undo/redo history; setRangeText does not.
+      textarea.ownerDocument.execCommand("insertText", false, replacement);
+    } catch (error) {
+      // Keep enclosure working in browsers without native insertion support.
+    } finally {
+      textarea.removeEventListener("input", onInput, true);
+    }
+    if (!inputEmitted && textarea.value === previousValue) {
+      textarea.setRangeText(replacement, start, end, "select");
+    }
+    textarea.setSelectionRange(selectionStart, selectionEnd);
+    if (!inputEmitted) {
+      textarea.dispatchEvent(new Event("input", { bubbles: true }));
+    }
+  }
+
   jsToolBar.prototype.elements.wiki_text_encloser = {
     type: "init_wiki_text_encloser",
   };
@@ -25,10 +52,8 @@
           event.key.toLowerCase() === "k") {
         event.preventDefault();
         const label = textarea.value.slice(start, end);
-        textarea.setRangeText("[" + label + "](url)", start, end, "select");
         const urlStart = start + label.length + 3;
-        textarea.setSelectionRange(urlStart, urlStart + 3);
-        textarea.dispatchEvent(new Event("input", { bubbles: true }));
+        replaceSelection(textarea, "[" + label + "](url)", start, end, urlStart, urlStart + 3);
         return;
       }
 
@@ -40,8 +65,7 @@
       event.preventDefault();
       const opening = startSymbols[index];
       const closing = endSymbols[index];
-      textarea.setRangeText(opening + textarea.value.slice(start, end) + closing, start, end, "select");
-      textarea.dispatchEvent(new Event("input", { bubbles: true }));
+      replaceSelection(textarea, opening + textarea.value.slice(start, end) + closing, start, end);
     });
   };
 })();
