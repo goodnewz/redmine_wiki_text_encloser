@@ -26,6 +26,8 @@ In Markdown editors, select the link text and press **Ctrl+K** (**Cmd+K** on mac
 
 Typing `[` still performs ordinary bracket wrapping (`[selected text]`), including for composing Redmine's `[[Wiki links]]`. Textile editors, other modifier shortcuts, IME composition, read-only or disabled editors, and events already handled elsewhere retain their existing behavior. The link shortcut also works in dynamically initialized toolbar editors and after toolbar redraws or preview/edit switching.
 
+To undo an accidental link or symbol enclosure, press **Ctrl+Z** (**Cmd+Z** on macOS) while the editor is focused. Enclosures use the browser's native edit history, which also supports redo. In browsers without native `insertText` command support, enclosure still works, but undo support depends on the browser's fallback behavior.
+
 ## Installation
 ### When using git
 1. Clone this repository to your Redmine plugins directory.
